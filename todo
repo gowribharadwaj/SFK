@@ -1,0 +1,110 @@
+git clone https://github.com/gowribharadwaj/SFK.git
+cd SFK
+
+-----------------------------------------------------------------------------------------------------
+
+Create the local .env (DON’T commit it)
+From the repo root, copy .env.example to .env and edit it. Example commands:
+    Copy-Item .env.example .env
+    notepad .env
+
+HOW TO DO:
+1. cd SFK
+2. Copy .env.example to a new file named .env
+    Copy-Item .env.example .env
+    (it creates a new file .env)
+3. open the .env file to edit it. for that, run the following command:
+    notepad .ev
+4. This will open a window like:
+    AOAI_ENDPOINT=
+    AOAI_API_KEY=
+    AOAI_API_VERSION=
+    REDIS_CONNECTION_STRING=
+    USE_REDIS=
+5. Paste your credentials into that file
+6. IMPORTANT: Do NOT commit .env
+    Git should ignore .env, because .gitignore already contains:
+    .env
+-----------------------------------------------------------------------------------------------------
+
+What to paste:
+
+AZURE_OPENAI_ENDPOINT — exact endpoint URL from Azure (must include https:// and trailing slash if the template expects it).
+
+AZURE_OPENAI_KEY — the subscription key they gave you.
+
+AZURE_OPENAI_DEPLOYMENT — the deployment name (e.g. gpt-4o).
+
+AZURE_OPENAI_API_VERSION — 2024-12-01-preview (or what the template says).
+
+USE_REDIS -> true or false depending on whether they will use Redis.
+
+If using Redis, set REDIS_URL (or REDIS_CONNECTION_STRING depending on repo) to the connection string they were given (use the exact format provider gave; if it requires rediss:// for SSL use that).
+
+IMPORTANT - Security note: .env is in .gitignore — do not check it into GitHub.    
+
+-----------------------------------------------------------------------------------------------------
+
+Create & activate a Python virtual environment
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+
+EXAMPLE - (.venv) PS C:\Users\you\SFK>
+
+-----------------------------------------------------------------------------------------------------
+
+pip install -r requirements.txt
+
+-----------------------------------------------------------------------------------------------------
+
+Quick config checks (recommended)
+
+Open .env and confirm all variables are present and values look correct.
+
+Confirm the repo’s code uses the same env variable names. (If you followed the delivered structure it will.)
+
+If using Azure OpenAI, confirm:
+
+AZURE_OPENAI_ENDPOINT looks like https://<your-resource>.openai.azure.com/
+
+AZURE_OPENAI_KEY is non-empty
+
+AZURE_OPENAI_DEPLOYMENT matches the deployment name configured in Azure (not necessarily the model name)
+
+AZURE_OPENAI_API_VERSION set as required (e.g. 2024-12-01-preview)
+
+If using Redis, confirm REDIS_URL is reachable from the laptop. If the provider requires SSL, the connection string may start with rediss:// and the redis library should support it.
+
+-----------------------------------------------------------------------------------------------------
+
+Run the server
+uvicorn src.main:app --reload --port 8000
+
+you should see logs and a line like:
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+
+-----------------------------------------------------------------------------------------------------
+
+QUICK CHECK-IN
+
+1. Clone repo & open it.
+
+2. Copy .env.example → .env.
+
+3. Paste Azure + Redis credentials into .env.
+
+4. Create & activate .venv.
+
+5. pip install -r requirements.txt
+
+6. uvicorn src.main:app --reload --port 8000
+
+7. Test with curl/Postman:
+
+    curl -X POST "http://localhost:8000/message" -H "Content-Type: application/json" \
+    -d '{"session_id":"alice","message":"What is the width of 6205?"}'
+
+
+8. Run tests: pytest -q
+
+9. After assessment: delete .env and rotate keys.
